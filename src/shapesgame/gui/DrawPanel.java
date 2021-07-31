@@ -14,8 +14,12 @@ public class DrawPanel extends JPanel
 	DrawPanel()
 	{
 		setBorder(BorderFactory.createLineBorder(Color.BLACK, 10));
+		this.setMinimumSize(new Dimension(550, 600));
+		this.setMaximumSize(new Dimension(600, 600));
 		this.addMouseListener(drlistener);
 		setKeyBindings();
+		
+		//start updating and repainting the panel for ~60 times a sec
 		Thread newThread = new Thread( () -> startUpdatingProcess(60L) );
 		newThread.start();
 	}
@@ -31,6 +35,7 @@ public class DrawPanel extends JPanel
 		shapesContainer.paintElements(g2d);
 	}
 	
+	//this method updates the graphic panel for the given by argument times 
 	private void startUpdatingProcess(long fps)
 	{
 		//Pretty shitty solution to fps lock, should go back and do better
@@ -96,7 +101,11 @@ public class DrawPanel extends JPanel
 		W_RELEASED("W_RELEASED"),
 		A_RELEASED("A_RELEASED"),
 		S_RELEASED("S_RELEASED"),
-		D_RELEASED("D_RELEASED");
+		D_RELEASED("D_RELEASED"),
+		UP_RELEASED("UP_RELEASED"),
+		RIGHT_RELEASED("RIGHT_RELEASED"),
+		DOWN_RELEASED("DOWN_RELEASED"),
+		LEFT_RELEASED("LEFT_RELEASED");
 		
 		private String name;
 		ActionMapKeys(String name)
@@ -133,6 +142,10 @@ public class DrawPanel extends JPanel
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_A, 0, true), ActionMapKeys.A_RELEASED.name);
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_S, 0, true), ActionMapKeys.S_RELEASED.name);
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_D, 0, true), ActionMapKeys.D_RELEASED.name);
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0, true), ActionMapKeys.UP_RELEASED.name);
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0, true), ActionMapKeys.RIGHT_RELEASED.name);
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0, true), ActionMapKeys.DOWN_RELEASED.name);
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0, true), ActionMapKeys.LEFT_RELEASED.name);
 		
 		actionMap.put(ActionMapKeys.E_PRESSED.name, new KeyAction(ActionMapKeys.E_PRESSED.name));
 		actionMap.put(ActionMapKeys.R_PRESSED.name, new KeyAction(ActionMapKeys.R_PRESSED.name));
@@ -149,14 +162,15 @@ public class DrawPanel extends JPanel
 		actionMap.put(ActionMapKeys.A_RELEASED.name, new KeyAction(ActionMapKeys.A_RELEASED.name));
 		actionMap.put(ActionMapKeys.S_RELEASED.name, new KeyAction(ActionMapKeys.S_RELEASED.name));
 		actionMap.put(ActionMapKeys.D_RELEASED.name, new KeyAction(ActionMapKeys.D_RELEASED.name));
+		actionMap.put(ActionMapKeys.UP_RELEASED.name, new KeyAction(ActionMapKeys.UP_RELEASED.name));
+		actionMap.put(ActionMapKeys.RIGHT_RELEASED.name, new KeyAction(ActionMapKeys.RIGHT_RELEASED.name));
+		actionMap.put(ActionMapKeys.DOWN_RELEASED.name, new KeyAction(ActionMapKeys.DOWN_RELEASED.name));
+		actionMap.put(ActionMapKeys.LEFT_RELEASED.name, new KeyAction(ActionMapKeys.LEFT_RELEASED.name));
 	}
 	
 	private class KeyAction extends AbstractAction
 	{
-		/**
-		 * TODO: THIS UID WAS GENERATED AUTOMATICALY BY ECLIPSE MAYBE YOU SHOULD CHANGE IT LATER
-		 */
-		private static final long serialVersionUID = -7436763374077364169L;
+		private static final long serialVersionUID = 2L;
 
 		public KeyAction(String actionCommand)
 		{
@@ -170,7 +184,7 @@ public class DrawPanel extends JPanel
 			{
 				case E_PRESSED:
 				{
-					if (shapesContainer.getCurrentShape().npoints == 0) break;
+					if (shapesContainer.getCurrentShape().npoints == 0) break; //if the current shape is empty, no reason to create new shape
 					
 					shapesContainer.newShape();
 					
@@ -233,25 +247,49 @@ public class DrawPanel extends JPanel
 				}
 				case UP_PRESSED:
 				{
-					shapesContainer.scaleCurrentShape(1.01);
+					shapesContainer.setEnlarging(true);
 					
 					break;
 				}
 				case DOWN_PRESSED:
 				{
-					shapesContainer.scaleCurrentShape(0.99);
+					shapesContainer.setShrinking(true);
 					
 					break;
 				}
 				case LEFT_PRESSED:
 				{
-					shapesContainer.rotateCurrentShape(2.0);
+					shapesContainer.setRotatingLeft(true);
 					
 					break;
 				}
 				case RIGHT_PRESSED:
 				{
-					shapesContainer.rotateCurrentShape(-2.0);
+					shapesContainer.setRotatingRight(true);
+					
+					break;
+				}
+				case UP_RELEASED:
+				{
+					shapesContainer.setEnlarging(false);
+					
+					break;
+				}
+				case DOWN_RELEASED:
+				{
+					shapesContainer.setShrinking(false);
+					
+					break;
+				}
+				case LEFT_RELEASED:
+				{
+					shapesContainer.setRotatingLeft(false);
+					
+					break;
+				}
+				case RIGHT_RELEASED:
+				{
+					shapesContainer.setRotatingRight(false);
 					
 					break;
 				}

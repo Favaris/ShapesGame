@@ -12,22 +12,28 @@ public class CustomShape implements Serializable
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 2L;
+	private static final long serialVersionUID = 3L;
 	
-	private final static short CIRCLES_RADIUS = 3;
-	private final static int MOVE_OFFSET = 2;
+	private final static short CIRCLES_RADIUS = 3; //the radius of the circles around the shape's vertices
+	private final static int MOVE_OFFSET = 2; //the "speed" with which the shape moves
+	private final static double ROTATION_ANGLE = 2.; //angle in degrees 
+	private final static double SCALING_COEF = 0.01; // this means that with each scale() method the shape will be changing it's size by 1%
 	
-	private Polygon2D shape = new Polygon2D();
-	private ArrayList<Ellipse2D.Double> circles = new ArrayList<Ellipse2D.Double>();
+	volatile private Polygon2D shape = new Polygon2D(); 
+	volatile private ArrayList<Ellipse2D.Double> circles = new ArrayList<Ellipse2D.Double>();
 	private Color color = new Color((int) (Math.random() * 256), (int) (Math.random() * 256), (int) (Math.random() * 256));
 	
-	public boolean isMovingRight = false, isMovingLeft = false, isMovingUp = false, isMovingDown = false;
+	//flags for auto moving/scaling/rotating
+	//these flag are used for smooth control of the shape 
+	public boolean isMovingRight = false, isMovingLeft = false, isMovingUp = false, isMovingDown = false; 
+	public boolean isRotatingRight = false, isRotatingLeft = false, isEnlarging = false, isShrinking = false;
 	
 	CustomShape()
 	{
 		
 	}
 	
+	// this method adds a new vertex to the shape (and a circle)
 	public void addCircle(int x, int y)
 	{
 		circles.add(new Ellipse2D.Double(x - CIRCLES_RADIUS, y - CIRCLES_RADIUS, 2 * CIRCLES_RADIUS, 2 * CIRCLES_RADIUS));
@@ -39,6 +45,7 @@ public class CustomShape implements Serializable
 		return shape.npoints == 0;
 	}
 	
+	// moving just one chosen vertex of the shape
 	public void moveVertex(double deltaX, double deltaY, int chosenVertexIndex)
 	{
 		shape.xpoints[chosenVertexIndex] += deltaX;
@@ -50,6 +57,7 @@ public class CustomShape implements Serializable
 		circles.add(chosenVertexIndex, newCircle);
 	}
 	
+	// removing last added vertex
 	public void removeLastCircle()
 	{
 		if (!circles.isEmpty() && shape.npoints > 0)
@@ -104,6 +112,7 @@ public class CustomShape implements Serializable
 		}
 	}
 	
+	//scaling relative to shape's center
 	public void scale(double scale)
 	{
 		if (shape.npoints <= 1) return; //cant scale a single point
@@ -135,14 +144,6 @@ public class CustomShape implements Serializable
 		}
 	}
 	
-	public void autoMove()
-	{
-		if (isMovingRight) move(MOVE_OFFSET, 0);
-		if (isMovingLeft) move(-MOVE_OFFSET, 0);
-		if (isMovingUp) move(0, -MOVE_OFFSET);
-		if (isMovingDown) move(0, MOVE_OFFSET);
-	}
-	
 	public void move(double deltaX, double deltaY)
 	{
 		shape.translate(deltaX, deltaY);
@@ -153,6 +154,21 @@ public class CustomShape implements Serializable
 			circles.remove(i);
 			circles.add(i, newCircle);
 		}
+	}
+	
+	
+	public void updateState()
+	{
+		if (isMovingRight) move(MOVE_OFFSET, 0);
+		if (isMovingLeft) move(-MOVE_OFFSET, 0);
+		if (isMovingUp) move(0, -MOVE_OFFSET);
+		if (isMovingDown) move(0, MOVE_OFFSET);
+		
+		if (isEnlarging) scale(1. + SCALING_COEF);
+		if (isShrinking) scale(1. - SCALING_COEF);
+		
+		if (isRotatingLeft) rotate(ROTATION_ANGLE);
+		if (isRotatingRight) rotate(-ROTATION_ANGLE);
 	}
 	
 	public Polygon2D getShape()
