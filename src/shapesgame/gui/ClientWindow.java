@@ -48,26 +48,9 @@ public class ClientWindow
 	private void setUpButtonPanel()
 	{
 		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
-		buttonPanel.setBackground(Color.gray);
+		//buttonPanel.setBackground(Color.gray);
 		buttonPanel.setMinimumSize(new Dimension(200, 600));
 		buttonPanel.setMaximumSize(new Dimension(200, Short.MAX_VALUE));
-		
-		
-		JButton newShapeButton = new JButton("New shape");
-		//newShapeButton.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-		newShapeButton.addActionListener(new ActionListener() 
-				{
-					public void actionPerformed(ActionEvent e) { drawPanel.addNewShape(); }
-				});
-		newShapeButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-		
-		
-		JButton goToNextShapeButton = new JButton("Go to the next shape");
-		goToNextShapeButton.addActionListener(new ActionListener() 
-				{
-					public void actionPerformed(ActionEvent e) { drawPanel.goToNextShape(); }
-				});
-		goToNextShapeButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 		
 		JButton controlsInfoButton = new JButton("Controls");
 		controlsInfoButton.addActionListener(new ActionListener() 
@@ -96,10 +79,7 @@ public class ClientWindow
 		controlsInfoButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 		
 		buttonPanel.add(Box.createVerticalGlue());
-		buttonPanel.add(newShapeButton);
-		//buttonPanel.add(Box.createVerticalGlue());
-		buttonPanel.add(goToNextShapeButton);
-		buttonPanel.add(new SaveOrDownloadPanel());
+		buttonPanel.add(new UpperButtonsPanel());
 		buttonPanel.add(Box.createVerticalGlue());
 		buttonPanel.add(new ControlButtonsPanel());
 		buttonPanel.add(Box.createVerticalGlue());
@@ -107,27 +87,52 @@ public class ClientWindow
 		buttonPanel.add(Box.createVerticalGlue());
 	}
 	
-	private class SaveOrDownloadPanel extends JPanel
+	private class UpperButtonsPanel extends JPanel
 	{
 		/**
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
 		
+		private JButton newShapeButton = new JButton("New shape");
+		private JButton goToNextShapeButton = new JButton("Next shape");
 		private JButton saveButton = new JButton("Save");
 		private JButton downloadButton = new JButton("Download");
 		
 		private JFileChooser fileChooser = new JFileChooser();
 		
-		SaveOrDownloadPanel()
+		UpperButtonsPanel()
 		{
 			//setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+			//this.setBackground(Color.blue);
 			setUpButtons();
 			setUpFileChooser();
 		}
 		
+		@Override
+		public Dimension getPreferredSize()
+		{
+			return new Dimension(140, 140);
+		}
+		
 		private void setUpButtons()
 		{
+			newShapeButton.addActionListener(new ActionListener() 
+					{
+						public void actionPerformed(ActionEvent e) { drawPanel.addNewShape(); }
+					});
+			newShapeButton.setPreferredSize(new Dimension(140, 30));
+			newShapeButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+			newShapeButton.setAlignmentY(Component.CENTER_ALIGNMENT);
+			
+			goToNextShapeButton.addActionListener(new ActionListener() 
+					{
+						public void actionPerformed(ActionEvent e) { drawPanel.goToNextShape(); }
+					});
+			goToNextShapeButton.setPreferredSize(new Dimension(140, 30));
+			goToNextShapeButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+			goToNextShapeButton.setAlignmentY(Component.CENTER_ALIGNMENT);
+			
 						
 			saveButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 			saveButton.setAlignmentY(Component.CENTER_ALIGNMENT);
@@ -137,10 +142,13 @@ public class ClientWindow
 			downloadButton.setAlignmentY(Component.CENTER_ALIGNMENT);
 			downloadButton.setPreferredSize(new Dimension(140, 30));
 			
+			add(newShapeButton);
+			add(goToNextShapeButton);
 			add(saveButton);
-			
 			add(downloadButton);		
 		}
+		
+		
 		
 		private void setUpFileChooser()
 		{
@@ -185,7 +193,7 @@ public class ClientWindow
 		 */
 		private static final long serialVersionUID = 1L;
 		
-		private static final short ICON_SIZE = 32;
+		private static final short ICON_SIZE = 42;
 		
 		private static final String UP_ICON_PATH = "icons/arrow-up.png";
 		private static final String LEFT_ICON_PATH = "icons/arrow-left.png";
@@ -219,7 +227,7 @@ public class ClientWindow
 		ControlButtonsPanel()
 		{
 			setUpButtons();
-			this.setBackground(Color.gray);
+			//this.setBackground(Color.gray);
 			setAlignmentX(CENTER_ALIGNMENT);
 			setMaximumSize(new Dimension(3 * ICON_SIZE + 20, 3 * ICON_SIZE + 20)); //3 icons * icon_size + 20 - flowlayout adds a 5 pixel gap between each component
 		}
